@@ -1,0 +1,49 @@
+{
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "start:dev": "nodemon",
+    "build": "tsc --build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "jest --passWithNoTests --silent --noStackTrace --runInBand",
+    "test:unit": "jest \"tests/unitary/.*\\.spec\\.ts\"  --runInBand",
+    "test:integration": "jest \"tests/integration/.*\\.spec\\.ts\" --silent --noStackTrace --runInBand --passWithNoTests",
+    "coverage": "jest --collect-coverage --silent --noStackTrace --runInBand"
+  },
+  "devDependencies": {
+    "@tsconfig/node20": "^20.1.4",
+    "@types/express": "^5.0.0",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.9.2",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^18.0.0",
+    "eslint-import-resolver-typescript": "^3.6.3",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^7.1.0",
+    "globals": "^15.12.0",
+    "ts-node": "^10.9.2",
+    "tslib": "^2.8.1",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.15.0"
+  },
+  "dependencies": {
+    "express": "^4.21.1",
+    "husky": "^9.1.7",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.7",
+    "ts-jest": "^29.2.5"
+  },
+  "name": "clean-typescript-scaffold",
+  "version": "0.0.1",
+  "description": "",
+  "author": "Lucas Nörenberg de Deus",
+  "license": "ISC",
+  "engines": {
+    "node": "22"
+  }
+}
