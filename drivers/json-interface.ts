@@ -1,4 +1,9 @@
-export type JsonSerializable = string | number | boolean | null | JsonObject | JsonArray;
+export type JsonSerializable = string
+  | number
+  | boolean
+  | null
+  | JsonObject
+  | JsonArray;
 
 interface JsonObject {
   [key: string]: JsonSerializable;

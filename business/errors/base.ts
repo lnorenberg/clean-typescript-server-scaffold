@@ -1,13 +1,14 @@
-import { JsonSerializable } from "../../drivers/json-interface";
-import { DomainError, ErrorCode } from "../types"
+import { JsonSerializable } from '../../drivers/json-interface';
+import { DomainError, DomainErrorOptions, ErrorCode } from '../types';
 
 export default abstract class BaseDomainError extends Error implements DomainError {
-    public code: ErrorCode = ErrorCode.INTERNAL_ERROR;
-    public name = 'Internal Error';
-    public message = `An unexpected error occurred while proccessing your request. Please try again later or contact our support representatives.`;
-    public details?: JsonSerializable;
+  public abstract code: ErrorCode;
 
-    constructor(message?: string, details?: JsonSerializable, cause?: Error) {
-        super(message, cause)
-    }
+  public abstract name: string;
+
+  public abstract details?: JsonSerializable;
+
+  constructor(message: string, options?: DomainErrorOptions) {
+    super(message, { cause: options?.cause } );
+  }
 }

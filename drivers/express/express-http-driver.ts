@@ -1,61 +1,123 @@
 import express, { Request, Response, NextFunction } from 'express';
-
-import { HttpDriver, HttpMethod, HttpMiddleware, HttpRequestHandler } from '../http-driver-interface';
+import {
+  HttpDriver,
+  HttpError,
+  HttpMethod,
+  HttpMiddleware,
+  HttpRequest,
+  HttpRequestHandler,
+  HttpResponse,
+} from '../http-driver-interface';
+import ErrorAdapter from '../../adapters/error-adapter';
+import { http as config } from '../../internal/config';
 
 export class ExpressHttpDriver implements HttpDriver {
-    private expressApp;
+  private expressApp;
+  private errorAdapter: ErrorAdapter;
     
-    constructor() {
-        this.expressApp = express();
-    }
+  constructor(errorAdapter: ErrorAdapter) {
+    this.expressApp = express();
+    this.errorAdapter = errorAdapter;
+  }
 
-    public registerEndpoint(method: HttpMethod, path: string, handler: HttpRequestHandler): void {
-        const expressRequestHandler = this.adaptRequestHandler(handler);
-        this.expressApp[method](path, expressRequestHandler);
-    }
+  public start() {
+    this.expressApp.listen(config.port, () => {
+      console.log(`Server is listening port ${config.port}`)
+    })
+  }
 
-    public registerCommonMiddlewares(handlers: HttpMiddleware[]): void {
-        this.expressApp.use(
-            ...handlers.map(this.adaptMiddleware),
-        );
-    }
+  public registerEndpoint(method: HttpMethod, path: string, handler: HttpRequestHandler): void {
+    const expressRequestHandler = this.adaptRequestHandler(handler);
+    this.expressApp[method](path, expressRequestHandler);
+  }
 
-    private adaptMiddleware() {
-        return async (req: Request, res: Response, next: NextFunction) => {
-            try {
+  public registerMiddleware(handler: HttpMiddleware): void {
+    this.expressApp.use(
+      this.adaptMiddleware(handler),
+    );
+  }
 
-            } catch (error) {
-                
-            }
-        };
-    }
+  private adaptMiddleware(middleware: HttpMiddleware) {
+    return async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const adaptedRequest = this.adaptExpressReq(req);
+        const adaptedResponse = this.adaptExpressRes(res);
 
-    private adaptRequestHandler(handler: HttpRequestHandler) {
-        return async (req: Request, res: Response, next: NextFunction) => {
-            try {
-                const result = await handler.handle({
-                    body: req.body,
-                    headers: req.headers,
-                    params: req.params,
-                });
+        const [modifiedRequest, modifiedResponse] = middleware.execute(adaptedRequest, adaptedResponse);
 
-                if (result.headers) {
-                    Object.entries(result.headers).forEach(([key, value]) => {
-                        res.header(key, value);
-                    })
-                }
+        this.setExpressHeaders(modifiedResponse?.headers, res);
 
-                if (result.body) {
-                    res.status(result.status);
-                    res.send(result.body);
-                    return;
-                }
+        if (modifiedRequest?.body) req.body = modifiedRequest.body;
 
-                res.sendStatus(result.status);
-            } catch (error) {
-                console.error(error);
-                next(error);
-            }
-        };
-    }
+        if (modifiedRequest?.headers) req.headers = modifiedRequest.headers;
+
+        if (modifiedRequest?.params) req.params = modifiedRequest.params;
+
+        next()
+      } catch (error) {
+        this.catchError(error, res, next);
+      }
+    };
+  }
+
+  private adaptRequestHandler(handler: HttpRequestHandler) {
+    return async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const adaptedRequest = this.adaptExpressReq(req)
+
+        const response = await handler.handle(adaptedRequest);
+
+        if (response.headers) this.setExpressHeaders(response.headers, res);
+
+        if (response.body) {
+          res.status(response.status);
+          res.send(response.body);
+          return;
+        }
+
+        res.sendStatus(response.status);
+      } catch (error) {
+        this.catchError(error, res, next);
+      }
+    };
+  }
+
+  private catchError(error: unknown, res: Response, next: NextFunction) {
+    const httpError = this.errorAdapter.toHttp(error);
+    this.respondWithError(httpError, res);
+    next(error);
+  }
+
+  private respondWithError(error: HttpError, res: Response): void {
+    res.status(error.status);
+    res.send({
+      code: error.code,
+      title: error.title,
+      description: error.description,
+      details: error.details
+    });
+  }
+
+  private adaptExpressReq(req: Request): HttpRequest {
+    return {
+      body: req.body,
+      headers: req.headers,
+      params: req.params,
+    };
+  }
+
+  private adaptExpressRes(res: Response): HttpResponse {
+    return {
+      headers: res.getHeaders(),
+      status: res.statusCode,
+    };
+  }
+
+  private setExpressHeaders(headers: HttpResponse['headers'], res: Response) {
+    if (!headers) return;
+
+    Object.entries(headers).forEach(
+      ([key, value]) => value != undefined && res.setHeader(key, value)
+    );
+  }
 }
