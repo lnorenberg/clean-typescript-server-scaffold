@@ -1,4 +1,4 @@
-import { setUpHttpServer } from './internal/main';
+import { setUpHttpServer } from './internal/http-server';
 
 export const init = () => {
   setUpHttpServer();

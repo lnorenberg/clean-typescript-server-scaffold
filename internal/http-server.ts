@@ -1,11 +1,9 @@
-import ErrorAdapter from '../adapters/error-adapter';
 import HealthRequestHandler from '../adapters/http/request-handlers/health';
-import { ExpressHttpDriver } from '../drivers/express/express-http-driver';
+import { makeHttpDriver } from '../drivers/factories';
 import { HttpMethod } from '../drivers/http-driver-interface';
 
 export const setUpHttpServer = () => {
-  const errorAdapter = new ErrorAdapter();
-  const server = new ExpressHttpDriver(errorAdapter);
+  const server = makeHttpDriver();
 
   server.registerEndpoint(HttpMethod.GET, '/health', new HealthRequestHandler());
 
