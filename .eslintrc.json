@@ -46,18 +46,14 @@
         "code": 120
       }
     ],
-    "semi": ["error", "always"],
-    "comma-dangle": [
-      "error",
-      {
+    "semi": ["error", "always"], 
+    "comma-dangle": ["error", {
         "arrays": "always-multiline",
         "objects": "always-multiline",
         "imports": "always-multiline",
         "exports": "always-multiline",
-        "functions": "always-multiline",
-        "importAttributes": "always-multiline"
-      }
-    ],
+        "functions": "always-multiline"
+    }],
     "comma-spacing": ["error", { "before": false, "after": true }]
   }
 }

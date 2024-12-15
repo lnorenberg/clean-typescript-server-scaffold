@@ -1,6 +1,14 @@
 {
   "_version": "20.17.0",
-  "extends": "@tsconfig/node20/tsconfig.json",
   "include": ["**/*.ts"],
-  "compilerOptions": {}
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "lib": ["es2023"],
+    "module": "Node16",
+    "target": "ES2023",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node16"
+  }
 }

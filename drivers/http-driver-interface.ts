@@ -7,7 +7,7 @@ export enum HttpMethod {
   POST = 'post',
   PUT = 'put',
   PATCH = 'patch',
-};
+}
 
 export enum HttpStatus {
   OK = 200,
@@ -23,8 +23,8 @@ export interface HttpDriver {
 
 export interface HttpMiddleware {
   execute(request: HttpRequest, response: HttpResponse): [
-    (Partial<HttpRequest>)| undefined,
-    Pick<HttpResponse, 'headers'> | undefined
+    (Partial<HttpRequest>) | undefined,
+    Pick<HttpResponse, 'headers'> | undefined,
   ];
 }
 

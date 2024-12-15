@@ -13,6 +13,7 @@ import { http as config } from '../../internal/config';
 
 export class ExpressHttpDriver implements HttpDriver {
   private expressApp;
+
   private errorAdapter: ErrorAdapter;
     
   constructor(errorAdapter: ErrorAdapter) {
@@ -22,8 +23,8 @@ export class ExpressHttpDriver implements HttpDriver {
 
   public start() {
     this.expressApp.listen(config.port, () => {
-      console.log(`Server is listening port ${config.port}`)
-    })
+      console.log(`Server is listening port ${config.port}`);
+    });
   }
 
   public registerEndpoint(method: HttpMethod, path: string, handler: HttpRequestHandler): void {
@@ -53,7 +54,7 @@ export class ExpressHttpDriver implements HttpDriver {
 
         if (modifiedRequest?.params) req.params = modifiedRequest.params;
 
-        next()
+        next();
       } catch (error) {
         this.catchError(error, res, next);
       }
@@ -63,7 +64,7 @@ export class ExpressHttpDriver implements HttpDriver {
   private adaptRequestHandler(handler: HttpRequestHandler) {
     return async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const adaptedRequest = this.adaptExpressReq(req)
+        const adaptedRequest = this.adaptExpressReq(req);
 
         const response = await handler.handle(adaptedRequest);
 
@@ -94,7 +95,7 @@ export class ExpressHttpDriver implements HttpDriver {
       code: error.code,
       title: error.title,
       description: error.description,
-      details: error.details
+      details: error.details,
     });
   }
 
@@ -117,7 +118,7 @@ export class ExpressHttpDriver implements HttpDriver {
     if (!headers) return;
 
     Object.entries(headers).forEach(
-      ([key, value]) => value != undefined && res.setHeader(key, value)
+      ([key, value]) => value != undefined && res.setHeader(key, value),
     );
   }
 }

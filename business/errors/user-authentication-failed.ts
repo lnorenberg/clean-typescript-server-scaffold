@@ -4,7 +4,9 @@ import BaseDomainError from './base';
 
 export default class UserAuthenticationFailedDomainError extends BaseDomainError {
   public code = ErrorCode.USER_AUTH_FAILED;
+
   public name = 'Authentication Failed';
+
   public details?: JsonSerializable | undefined;
 
   constructor() {

@@ -5,8 +5,8 @@ export default class HealthRequestHandler implements HttpRequestHandler {
     return {
       status: 200,
       body: {
-        httpServer: 'Ok'
+        httpServer: 'Ok',
       },
     };
   }
-};
+}
