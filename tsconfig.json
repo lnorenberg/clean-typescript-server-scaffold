@@ -1,6 +1,6 @@
 {
   "_version": "20.17.0",
-  "include": ["**/*.ts"],
+  "include": ["src/**/*.ts"],
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "lib": ["es2023"],
@@ -9,6 +9,7 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "moduleResolution": "node16"
-  }
+    "moduleResolution": "node16",
+    "outDir": "dist"
+  },
 }
